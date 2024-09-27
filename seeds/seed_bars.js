@@ -11,7 +11,7 @@ export async function seed(knex) {
       name: "Bella Union",
       address: "400-11 3rd Avenue New York, NY 10016",
       image_url:
-        "https://cdn0.weddingwire.com/vendor/153261/3_2/960/jpg/370365020-17999112710030534-1838719400924629580-n_51_2162351-169902196287116.jpeg",
+        "https://lh3.googleusercontent.com/p/AF1QipPxpFgL3eHNSZHwU7hWqIYwCen10DeXp-HqOhPR=s1360-w1360-h1020",
       zipcode: "10016",
     },
     {
@@ -22,5 +22,13 @@ export async function seed(knex) {
         "https://www.thewinslownyc.com/wp-content/uploads/2019/03/IMG_20190326_112942_01-1.jpg",
       zipcode: "10003",
     },
+    {
+      id: 3,
+      name: "The Snow",
+      address: "244 E 14th St, New York, NY 10003",
+      image_url:
+        "https://www.thewinslownyc.com/wp-content/uploads/2019/03/IMG_20190326_112942_01-1.jpg",
+      zipcode: "10003",
+    }
   ]);
 }

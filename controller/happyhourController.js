@@ -91,3 +91,23 @@ export const getHappyHourByZipcode = async (req, res) => {
     });
   }
 };
+
+export const getAllHappyHours = async (req, res) => {
+  try {
+    const happyHours = await knex("happyhours")
+      .join("bars", "bars.id", "=", "happyhours.bar_id")
+      .select(
+        "happyhours.*",
+        "bars.name as bar_name",
+        "bars.address as bar_address"
+      );
+    res.json(happyHours);
+  } catch (error) {
+    res
+      .status(500)
+      .send({
+        message: "Error fetching all happy hours",
+        error: error.message,
+      });
+  }
+};

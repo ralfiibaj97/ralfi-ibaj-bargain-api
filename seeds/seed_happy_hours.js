@@ -21,6 +21,14 @@ export async function seed(knex) {
       end_time: '20:00:00',
       description: '$6 cocktails and $8 beers',
       rating: 5
+    },
+    {
+      id: 3,
+      bar_id: 3,
+      start_time: '18:00:00',
+      end_time: '20:00:00',
+      description: '$6 cocktails and $8 beers',
+      rating: 5
     }
   ]);
 }
