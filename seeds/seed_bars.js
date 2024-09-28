@@ -19,7 +19,7 @@ export async function seed(knex) {
       name: "The Winslow",
       address: "243 E 14th St, New York, NY 10003",
       image_url:
-        "https://www.thewinslownyc.com/wp-content/uploads/2019/03/IMG_20190326_112942_01-1.jpg",
+        "https://lh3.googleusercontent.com/p/AF1QipOGnI4PGhHrXsWcaGDlvzsA50zOSCk6KV6kA83L=s1360-w1360-h1020",
       zipcode: "10003",
     },
     {
@@ -27,7 +27,7 @@ export async function seed(knex) {
       name: "The Snow",
       address: "244 E 14th St, New York, NY 10003",
       image_url:
-        "https://www.thewinslownyc.com/wp-content/uploads/2019/03/IMG_20190326_112942_01-1.jpg",
+        "https://lh3.googleusercontent.com/p/AF1QipOGnI4PGhHrXsWcaGDlvzsA50zOSCk6KV6kA83L=s1360-w1360-h1020",
       zipcode: "10003",
     }
   ]);

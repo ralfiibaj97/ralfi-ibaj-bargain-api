@@ -3,61 +3,35 @@ import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
 export const postHappyHour = async (req, res) => {
-  const {
-    name,
-    address,
-    zipcode,
-    image_url,
-    start_time,
-    end_time,
-    description,
-  } = req.body;
-  if (
-    !name ||
-    !address ||
-    !zipcode ||
-    !image_url ||
-    !start_time ||
-    !end_time ||
-    !description
-  ) {
+  const { barId } = req.params; 
+  const { start_time, end_time, description } = req.body;
+
+  if (!barId || !start_time || !end_time || !description) {
     return res.status(400).json({
-      message: "Missing required information",
+      message: "Missing required information for creating a happy hour",
     });
   }
+
   try {
-    let bar = await knex("bars").where({ name, address }).first();
-
-    if (!bar) {
-      bar = await knex("bars").insert({
-        name,
-        address,
-        zipcode,
-        image_url: image_url || "",
-      });
-      const newBarId = barData[0];
-      bar = await knex("bars").where({ id: newBarId }).first();
-    }
-
-    const happyHourData = await knex("happyhours").insert({
-      bar_id: bar.id,
+    const result = await knex("happyhours").insert({
+      bar_id: barId, 
       start_time,
       end_time,
       description,
-      rating: 0,
     });
 
-    const newHappyHourId = happyHourData[0];
-    const createdHappyHour = await knex("happyhours")
-      .where({ id: newHappyHourId })
-      .first();
-    res.status(201).json(createdHappyHour);
+    const newHappyHourId = result[0];  
+
+    res.status(201).json({ id: newHappyHourId });
   } catch (error) {
+    console.error("Error adding happy hour:", error.message);
     res.status(500).json({
-      message: `Cannot create your new hapy hour: ${error.message}`,
+      message: `Cannot create your new happy hour: ${error.message}`,
     });
   }
 };
+
+
 
 export const getHappyHourByZipcode = async (req, res) => {
   const { zipcode } = req.params;
@@ -103,11 +77,9 @@ export const getAllHappyHours = async (req, res) => {
       );
     res.json(happyHours);
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        message: "Error fetching all happy hours",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Error fetching all happy hours",
+      error: error.message,
+    });
   }
 };
