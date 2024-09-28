@@ -2,74 +2,90 @@ import initKnex from "knex";
 import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
-export const getAllBars = async (req, res) => {
+export const getAllBars = async (_req, res) => {
   try {
-    const data = await knex("bars").select("name", "address", "image_url");
+    const data = await knex("bars").select(
+      "id",
+      "name",
+      "address",
+      "image_url"
+    );
     res.status(200).json(data);
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).json({
+      message: `Error fetching bars: ${error.message}`,
+    });
   }
 };
 
 export const getBarById = async (req, res) => {
-  try {
-    const bar = await knex("bars").where({ id: req.params.id }).first();
-    const happyHours = await knex("happyhours").where({ bar_id: req.params.id });
+  const { id } = req.params;
 
+  try {
+    const bar = await knex("bars").where({ id }).first();
     if (!bar) {
-      return res.status(404).json({ message: "Bar not found" });
+      return res.status(404).json({
+        message: `Bar ID: ${id} not found`,
+      });
     }
-    res.json({
+
+    const happyHours = await knex("happyhours").where({ bar_id: id });
+
+    res.status(200).json({
       bar,
-      happyHours
+      happyHours,
     });
   } catch (error) {
-    res.status(500).send({ message: "Error fetching bar", error: error.message });
+    res.status(500).json({
+      message: `Error fetching bar: ${error.message}`,
+    });
   }
 };
 
-
-
 export const getBarsByZipcode = async (req, res) => {
+  const { zipcode } = req.params;
+
   try {
-    const { zipcode } = req.params;
     const bars = await knex("bars").where({ zipcode });
-    if (bars.length) {
-      res.json(bars);
-    } else {
-      res.status(404).json({ message: "No bars found for this zipcode" });
+
+    if (bars.length === 0) {
+      return res.status(404).json({
+        message: `No bars found for zipcode: ${zipcode}`,
+      });
     }
+
+    res.status(200).json(bars);
   } catch (error) {
-    console.error("Error fetching bars by zipcode: ", error);
-    res.status(500).json({ message: "Error fetching bars by zipcode" });
+    res.status(500).json({
+      message: `Error fetching bars by zipcode: ${error.message}`,
+    });
   }
 };
 
 export const addBar = async (req, res) => {
   const { name, address, zipcode, image_url } = req.body;
+
   if (!name || !address || !zipcode || !image_url) {
     return res.status(400).json({
-      message: "Missing required fields for creating a bar",
+      message: "Please fill out ALL of the fields!",
     });
   }
 
   try {
-    const result = await knex("bars").insert({
+    const data = await knex("bars").insert({
       name,
       address,
       zipcode,
-      image_url
+      image_url,
     });
-    const newBarId = result[0]; 
 
-    res.status(201).json({ id: newBarId });
+    const newBarId = data[0];
+    const createdBar = await knex("bars").where({ id: newBarId }).first();
+
+    res.status(201).json(createdBar);
   } catch (error) {
     res.status(500).json({
-      message: "Error adding new bar",
-      error: error.message,
+      message: `Error adding new bar: ${error.message}`,
     });
   }
 };
-
-
-

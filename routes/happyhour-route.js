@@ -1,7 +1,6 @@
-import express from 'express';
-import * as happyhourController from '../controller/happyhourController.js';
+import express from "express";
+import * as happyhourController from "../controller/happyhourController.js";
 const router = express.Router();
-
 
 router.post("/:barId", happyhourController.postHappyHour);
 router.get("/:zipcode", happyhourController.getHappyHourByZipcode);

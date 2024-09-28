@@ -3,35 +3,35 @@ import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
 export const postHappyHour = async (req, res) => {
-  const { barId } = req.params; 
+  const { barId } = req.params;
   const { start_time, end_time, description } = req.body;
 
   if (!barId || !start_time || !end_time || !description) {
     return res.status(400).json({
-      message: "Missing required information for creating a happy hour",
+      message: "Please fill out ALL of the fields!",
     });
   }
 
   try {
-    const result = await knex("happyhours").insert({
-      bar_id: barId, 
+    const data = await knex("happyhours").insert({
+      bar_id: barId,
       start_time,
       end_time,
       description,
     });
 
-    const newHappyHourId = result[0];  
+    const newHappyHourId = data[0];
+    const createdHappyHour = await knex("happyhours")
+      .where({ id: newHappyHourId })
+      .first();
 
-    res.status(201).json({ id: newHappyHourId });
+    res.status(201).json(createdHappyHour);
   } catch (error) {
-    console.error("Error adding happy hour:", error.message);
     res.status(500).json({
       message: `Cannot create your new happy hour: ${error.message}`,
     });
   }
 };
-
-
 
 export const getHappyHourByZipcode = async (req, res) => {
   const { zipcode } = req.params;
@@ -41,6 +41,7 @@ export const getHappyHourByZipcode = async (req, res) => {
       message: "Missing required zipcode",
     });
   }
+
   try {
     const happyHours = await knex("happyhours")
       .join("bars", "bars.id", "=", "happyhours.bar_id")
@@ -53,15 +54,17 @@ export const getHappyHourByZipcode = async (req, res) => {
         "happyhours.end_time",
         "happyhours.description"
       );
+
     if (happyHours.length === 0) {
       return res.status(404).json({
-        message: "No Happy Hour found for this specific zipcode",
+        message: `No Happy Hour found for zipcode: ${zipcode}`,
       });
     }
+
     res.status(200).json(happyHours);
   } catch (error) {
     res.status(500).json({
-      message: `Can't retrieve happy hours: ${error.message}`,
+      message: `Cannot retrieve happy hours: ${error.message}`,
     });
   }
 };
@@ -75,11 +78,11 @@ export const getAllHappyHours = async (req, res) => {
         "bars.name as bar_name",
         "bars.address as bar_address"
       );
-    res.json(happyHours);
+
+    res.status(200).json(happyHours);
   } catch (error) {
-    res.status(500).send({
-      message: "Error fetching all happy hours",
-      error: error.message,
+    res.status(500).json({
+      message: `Error fetching all happy hours: ${error.message}`,
     });
   }
 };
