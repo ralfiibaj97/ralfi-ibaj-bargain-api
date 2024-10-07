@@ -86,3 +86,48 @@ export const getAllHappyHours = async (req, res) => {
     });
   }
 };
+
+export const updateHappyHour = async (req, res) => {
+  const { id } = req.params;
+  const { start_time, end_time, description } = req.body;
+
+  if (!start_time && !end_time && !description) {
+    return res.status(400).json({
+      message:
+        "Please provide at least one field to update",
+    });
+  }
+
+  try {
+    const existingHappyHour = await knex("happyhours").where({ id }).first();
+
+    if (!existingHappyHour) {
+      return res.status(404).json({
+        message: `Happy Hour with ID: ${id} not found`,
+      });
+    }
+
+    const updateData = {};
+    if (start_time) updateData.start_time = start_time;
+    if (end_time) updateData.end_time = end_time;
+    if (description) updateData.description = description;
+
+    const rowsAffected = await knex("happyhours")
+      .where({ id })
+      .update(updateData);
+
+    if (!rowsAffected) {
+      return res.status(400).json({
+        message: "No changes were made to the happy hour.",
+      });
+    }
+
+    const updatedHappyHour = await knex("happyhours").where({ id }).first();
+
+    res.status(200).json(updatedHappyHour);
+  } catch (error) {
+    res.status(500).json({
+      message: `Cannot update your happy hour: ${error.message}`,
+    });
+  }
+};

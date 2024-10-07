@@ -89,3 +89,20 @@ export const addBar = async (req, res) => {
     });
   }
 };
+
+export const deleteBarById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await knex("bars").where({ id }).del();
+    if (result === 0) {
+      return res.status(404).json({
+        message: `Bar ID: ${id} not found`,
+      });
+    }
+    res.send("Bar deleted successfully.");
+  } catch (error) {
+    res.status(500).json({
+      message: `Error deleting bar: ${error.message}`,
+    });
+  }
+};
